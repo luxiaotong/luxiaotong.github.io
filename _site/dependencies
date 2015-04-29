@@ -1,0 +1,11 @@
+gem install i18n -v '0.7.0'
+gem install coffee-script-source -v '1.9.1.1'
+gem install execjs -v '2.5.2'
+gem install coffee-script -v '2.4.1'
+gem install colorator -v '0.1'
+gem install ffi -v '1.9.8'
+gem install gemoji -v '2.1.0'
+gem install net-dns -v '0.8.0'
+gem install public_suffix -v '1.5.1
+gem install jekyll-paginate -v '1.1.0'
+gem install sass -v '3.4.13'

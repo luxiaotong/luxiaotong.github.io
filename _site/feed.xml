@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Shannon Lu</title>
+    <description>This is my blog about tech</description>
+    <link></link>
+    <atom:link href="/feed.xml" rel="self" type="application/rss+xml" />
+    
+      <item>
+        <title>关于sudo 的发音</title>
+        <description>&lt;h3&gt;sudo在manual中的定义:&lt;/h3&gt;
+
+&lt;p&gt;execute a command as another user
+使用其它用户身份执行一个命令.&lt;/p&gt;
+
+&lt;p&gt;sudo allows a permitted user to execute a command as the superuser or another user, as specified in the sudoers file.
+sudo允许sudoers文件中指定的用户,使用超级用户或其它用户身份执行一个命令.&lt;/p&gt;
+
+&lt;h3&gt;pseudo的单词释义&lt;/h3&gt;
+
+&lt;p&gt;n. 伪君子；假冒的人
+adj. 冒充的，假的&lt;/p&gt;
+
+&lt;h3&gt;sudo与pseudo&lt;/h3&gt;
+
+&lt;p&gt;sudo表达了一种假冒其它人执行命令的意思, 在意思上与pseudo很接近, 而且这两个单词也长的也很像, 所以我猜测sudo就是pseudo的缩写, 发音和pseudo一样.&lt;/p&gt;
+
+&lt;h3&gt;发音&lt;/h3&gt;
+
+&lt;p&gt;[&amp;#39;sʊdo] &lt;/p&gt;
+
+&lt;h3&gt;参考&lt;/h3&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://dict.youdao.com/search?q=pseudo&amp;amp;keyfrom=hao360&quot;&gt;http://dict.youdao.com/search?q=pseudo&amp;amp;keyfrom=hao360&lt;/a&gt;&lt;/p&gt;
+</description>
+        <pubDate>Fri, 11 Jul 2014 00:00:00 +0800</pubDate>
+        <link>/%E5%85%B3%E4%BA%8Esudo%E5%8F%91%E9%9F%B3/</link>
+        <guid isPermaLink="true">/%E5%85%B3%E4%BA%8Esudo%E5%8F%91%E9%9F%B3/</guid>
+      </item>
+    
+  </channel>
+</rss>
