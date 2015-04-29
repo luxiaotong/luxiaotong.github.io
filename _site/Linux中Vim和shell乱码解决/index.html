@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Linux中Vim和shell乱码解决 – Shannon Lu – This is my blog about tech</title>
+
+        <meta charset="utf-8" />
+    <meta content='text/html; charset=utf-8' http-equiv='Content-Type'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0'>
+
+    
+    <meta name="description" content="
+问题: 使用Xshell连接到开发机, Vim和shell中的中文都出现乱码
+解决: 
+
+
+Xshell编码改成UTF-8
+vim ~/.bashprofile, 增加一行:
+`export LCALL=en_US.utf8`
+source ~/.bash_profile
+
+备注:
+
+
+由于没有sudo和root权限, 所以只能修改当前登录用户的~/.bash_profile, 如果有权限可以尝试修改/etc/sysconfig/i18n
+source的作用是把刚才修改的内容加载一下.否则修改完需要重启或重新登录.
+修改前可以使用locale -a, 查看当前支持的编码.
+
+参考:
+
+
+http://blog.csdn.net/wangjun_pfc/article/details/4009205
+http://www.cnblogs.com/Jack47/p/3551584.html
+
+
+" />
+    <meta property="og:description" content="
+问题: 使用Xshell连接到开发机, Vim和shell中的中文都出现乱码
+解决: 
+
+
+Xshell编码改成UTF-8
+vim ~/.bashprofile, 增加一行:
+`export LCALL=en_US.utf8`
+source ~/.bash_profile
+
+备注:
+
+
+由于没有sudo和root权限, 所以只能修改当前登录用户的~/.bash_profile, 如果有权限可以尝试修改/etc/sysconfig/i18n
+source的作用是把刚才修改的内容加载一下.否则修改完需要重启或重新登录.
+修改前可以使用locale -a, 查看当前支持的编码.
+
+参考:
+
+
+http://blog.csdn.net/wangjun_pfc/article/details/4009205
+http://www.cnblogs.com/Jack47/p/3551584.html
+
+
+" />
+    
+    <meta name="author" content="Shannon Lu" />
+
+    
+    <meta property="og:title" content="Linux中Vim和shell乱码解决" />
+    <meta property="twitter:title" content="Linux中Vim和shell乱码解决" />
+    
+
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <link rel="stylesheet" type="text/css" href="/style.css" />
+    <link rel="alternate" type="application/rss+xml" title="Shannon Lu - This is my blog about tech" href="/feed.xml" />
+
+    <!-- Created with Jekyll Now - http://github.com/barryclark/jekyll-now -->
+  </head>
+
+  <body>
+    <div class="wrapper-masthead">
+      <div class="container">
+        <header class="masthead clearfix">
+          <a href="/" class="site-avatar"><img src="http://luxiaotong-image.stor.sinaapp.com/%E6%88%91%E7%9A%84%E5%A4%B4%E5%83%8F.jpg" /></a>
+
+          <div class="site-info">
+            <h1 class="site-name"><a href="/">Shannon Lu</a></h1>
+            <p class="site-description">This is my blog about tech</p>
+          </div>
+
+          <nav>
+            <a href="/about">About</a>
+          </nav>
+        </header>
+      </div>
+    </div>
+
+    <div id="main" role="main" class="container">
+      <article class="post">
+  <h1>Linux中Vim和shell乱码解决</h1>
+
+  <div class="entry">
+    <ul>
+<li><p>问题: 使用Xshell连接到开发机, Vim和shell中的中文都出现乱码</p></li>
+<li><p>解决: </p>
+
+<ol>
+<li>Xshell编码改成UTF-8</li>
+<li>vim ~/.bash<em>profile, 增加一行:
+`export LC</em>ALL=en_US.utf8`</li>
+<li>source ~/.bash_profile</li>
+</ol></li>
+<li><p>备注:</p>
+
+<ol>
+<li>由于没有sudo和root权限, 所以只能修改当前登录用户的~/.bash_profile, 如果有权限可以尝试修改/etc/sysconfig/i18n</li>
+<li>source的作用是把刚才修改的内容加载一下.否则修改完需要重启或重新登录.</li>
+<li>修改前可以使用locale -a, 查看当前支持的编码.</li>
+</ol></li>
+<li><p>参考:</p>
+
+<ul>
+<li><a href="http://blog.csdn.net/wangjun_pfc/article/details/4009205" title="http://blog.csdn.net/wangjun_pfc/article/details/4009205">http://blog.csdn.net/wangjun_pfc/article/details/4009205</a></li>
+<li><a href="http://www.cnblogs.com/Jack47/p/3551584.html" title="http://www.cnblogs.com/Jack47/p/3551584.html">http://www.cnblogs.com/Jack47/p/3551584.html</a></li>
+</ul></li>
+</ul>
+
+  </div>
+
+  <div class="date">
+    Written on July 13, 2014
+  </div>
+
+  
+</article>
+
+    </div>
+
+    <div class="wrapper-footer">
+      <div class="container">
+        <footer class="footer">
+          
+<a href="mailto:luxiaotong@baidu.com"><i class="svg-icon email"></i></a>
+
+
+<a href="http://github.com/luxiaotong"><i class="svg-icon github"></i></a>
+
+
+
+
+
+
+
+        </footer>
+      </div>
+    </div>
+
+    
+
+  </body>
+</html>
