@@ -35,12 +35,15 @@
 
     <div id="main" role="main" class="container">
       {{ content }}
+      {% include disqus.html %}
     </div>
+
 
     <div class="wrapper-footer">
       <div class="container">
         <footer class="footer">
-          {% include svg-icons.html %}
+            {% include svg-icons.html %}
+            <p> &copy; {{ site.time | date: '%Y' }}. All rights reserved.  </p>
         </footer>
       </div>
     </div>
