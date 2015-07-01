@@ -63,7 +63,7 @@ catch_workers_output = yes
 ```
 
 再次在谷姐上搜索『setaffinity: Invalid argument』
-找到在[php bug中有对该问题的描述](https://bugs.php.net/bug.php?id=60078)，并且在评论中找到[修复此问题的代码](https://github.com/odoucet/xhprof/commit/2e74533746bf14b0bcfc9a6fae08e1bf9b4f724b)
+找到在[php bug中有对该问题的描述，以及对该问题的分析](https://bugs.php.net/bug.php?id=60078)，并且在评论中找到[修复此问题的代码](https://github.com/odoucet/xhprof/commit/2e74533746bf14b0bcfc9a6fae08e1bf9b4f724b)
 
 于是**将xhprof.c按照提交中的样子修改**一下，之后将xhprof重新编译安装，就可以正常运行了。
 
