@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  2015-07-01-解决安装xhprof后 fpm报错问题(recv failed 104 nginx 502)
+title:  解决安装xhprof后 fpm报错问题(recv failed 104 nginx 502)
 ---
 
 问题描述

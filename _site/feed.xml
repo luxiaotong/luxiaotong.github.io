@@ -7,7 +7,7 @@
     <atom:link href="/feed.xml" rel="self" type="application/rss+xml" />
     
       <item>
-        <title>2015-07-01-解决安装xhprof后 fpm报错问题(recv failed 104 nginx 502)</title>
+        <title>解决安装xhprof后 fpm报错问题(recv failed 104 nginx 502)</title>
         <description>&lt;h2&gt;问题描述&lt;/h2&gt;
 
 &lt;p&gt;&lt;strong&gt;安装xhprof后，在代码中加入&lt;/strong&gt;&lt;/p&gt;
