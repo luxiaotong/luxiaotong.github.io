@@ -7,6 +7,101 @@
     <atom:link href="/feed.xml" rel="self" type="application/rss+xml" />
     
       <item>
+        <title>2015-07-01-解决安装xhprof后 fpm报错问题(recv failed 104 nginx 502)</title>
+        <description>&lt;h2&gt;问题描述&lt;/h2&gt;
+
+&lt;p&gt;&lt;strong&gt;安装xhprof后，在代码中加入&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;xhprof_enable(XHPROF_FLAGS_CPU+XHPROF_FLAGS_MEMORY); 
+$xhprof_data = xhprof_disable();
+var_dump($xhprof_data);exit;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;通过浏览器访问出现nginx 502报错&lt;/strong&gt;
+&lt;img src=&quot;http://luxiaotong-image.stor.sinaapp.com/nginx_502.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;nginx error log报错如下&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;2015/06/29 21:30:26 [error] 27710#0: *140 recv() failed (104: Connection reset by peer) while reading response header from upstream, client: 10.44.112.83, server: , request: &amp;quot;GET /test.php HTTP/1.1&amp;quot;, upstream: &amp;quot;fastcgi://127.0.0.1:8500&amp;quot;, host: &amp;quot;cq01-rdqa-dev091.cq01.baidu.com:8001&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;fpm log日志信息如下&lt;/strong&gt;
+&lt;code&gt;
+[29-Jun-2015 21:30:26] WARNING: [pool www2] child 27270 exited on signal 11 (SIGSEGV - core dumped) after 7526.184909 seconds from start
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;h2&gt;问题解决过程&lt;/h2&gt;
+
+&lt;p&gt;首先从上述日志并没有看出具体的问题，经过在谷组上搜索，『recv failed 104 connection resetby peer』&lt;/p&gt;
+
+&lt;p&gt;发现要在fpm日志输出更多错误信息。
+&lt;a href=&quot;http://stackoverflow.com/questions/18379323/failed-104-connection-reset-by-peer&quot;&gt;方法如下&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;修改fpm配置文件fpm.conf，加入&lt;strong&gt;catch_workers_output = yes&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;[global]
+pid = run/fpm.pid
+error_log = log/fpm.log
+daemonize = yes 
+[www2]
+user=nobody
+group=nobody
+listen = ***
+pm = dynamic
+pm.max_children = 200 
+pm.start_servers = 2 
+pm.min_spare_servers = 1 
+pm.max_spare_servers = 3 
+request_terminate_timeout = 120s
+rlimit_files = 1310
+rlimit_core = unlimited
+catch_workers_output = yes
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;重启fpm，再次请求，fpm log会输出如下信息&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;30-Jun-2015 19:02:20] WARNING: [pool www2] child 17892 said into stderr: &amp;quot;setaffinity: Invalid argument&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;再次在谷姐上搜索『setaffinity: Invalid argument』
+找到在&lt;a href=&quot;https://bugs.php.net/bug.php?id=60078&quot;&gt;php bug中有对该问题的描述&lt;/a&gt;，并且在评论中找到&lt;a href=&quot;https://github.com/odoucet/xhprof/commit/2e74533746bf14b0bcfc9a6fae08e1bf9b4f724b&quot;&gt;修复此问题的代码&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;于是&lt;strong&gt;将xhprof.c按照提交中的样子修改&lt;/strong&gt;一下，之后将xhprof重新编译安装，就可以正常运行了。&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;array(2) {
+  [&amp;quot;main()==&amp;gt;xhprof_disable&amp;quot;]=&amp;gt;
+  array(5) {
+    [&amp;quot;ct&amp;quot;]=&amp;gt;
+    int(1)
+    [&amp;quot;wt&amp;quot;]=&amp;gt;
+    int(3)
+    [&amp;quot;cpu&amp;quot;]=&amp;gt;
+    int(0)
+    [&amp;quot;mu&amp;quot;]=&amp;gt;
+    int(840)
+    [&amp;quot;pmu&amp;quot;]=&amp;gt;
+    int(0)
+  }
+  [&amp;quot;main()&amp;quot;]=&amp;gt;
+  array(5) {
+    [&amp;quot;ct&amp;quot;]=&amp;gt;
+    int(1)
+    [&amp;quot;wt&amp;quot;]=&amp;gt;
+    int(16)
+    [&amp;quot;cpu&amp;quot;]=&amp;gt;
+    int(0)
+    [&amp;quot;mu&amp;quot;]=&amp;gt;
+    int(1856)
+    [&amp;quot;pmu&amp;quot;]=&amp;gt;
+    int(0)
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2&gt;参考文献&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://stackoverflow.com/questions/18379323/failed-104-connection-reset-by-peer&quot;&gt;http://stackoverflow.com/questions/18379323/failed-104-connection-reset-by-peer&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://bugs.php.net/bug.php?id=60078&quot;&gt;https://bugs.php.net/bug.php?id=60078&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/odoucet/xhprof/commit/2e74533746bf14b0bcfc9a6fae08e1bf9b4f724b&quot;&gt;https://github.com/odoucet/xhprof/commit/2e74533746bf14b0bcfc9a6fae08e1bf9b4f724b&lt;/a&gt;&lt;/p&gt;
+</description>
+        <pubDate>Wed, 01 Jul 2015 00:00:00 +0800</pubDate>
+        <link>/%E8%A7%A3%E5%86%B3%E5%AE%89%E8%A3%85xhprof%E5%90%8E%20fpm%E6%8A%A5%E9%94%99%E9%97%AE%E9%A2%98(recv%20failed%20104%20nginx%20502)/</link>
+        <guid isPermaLink="true">/%E8%A7%A3%E5%86%B3%E5%AE%89%E8%A3%85xhprof%E5%90%8E%20fpm%E6%8A%A5%E9%94%99%E9%97%AE%E9%A2%98(recv%20failed%20104%20nginx%20502)/</guid>
+      </item>
+    
+      <item>
         <title>2014总结</title>
         <description>&lt;h4&gt;关于读书&lt;/h4&gt;
 

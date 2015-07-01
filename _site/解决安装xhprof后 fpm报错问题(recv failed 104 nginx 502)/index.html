@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>2015-07-01-解决安装xhprof后 fpm报错问题(recv failed 104 nginx 502) – Shannon Lu – This is my blog about tech</title>
+
+        <meta charset="utf-8" />
+    <meta content='text/html; charset=utf-8' http-equiv='Content-Type'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0'>
+
+    
+    <meta name="description" content="问题描述
+
+安装xhprof后，在代码中加入
+" />
+    <meta property="og:description" content="问题描述
+
+安装xhprof后，在代码中加入
+" />
+    
+    <meta name="author" content="Shannon Lu" />
+
+    
+    <meta property="og:title" content="2015-07-01-解决安装xhprof后 fpm报错问题(recv failed 104 nginx 502)" />
+    <meta property="twitter:title" content="2015-07-01-解决安装xhprof后 fpm报错问题(recv failed 104 nginx 502)" />
+    
+
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <link rel="stylesheet" type="text/css" href="/style.css" />
+    <link rel="alternate" type="application/rss+xml" title="Shannon Lu - This is my blog about tech" href="/feed.xml" />
+
+    <!-- Created with Jekyll Now - http://github.com/barryclark/jekyll-now -->
+  </head>
+
+  <body>
+    <div class="wrapper-masthead">
+      <div class="container">
+        <header class="masthead clearfix">
+          <a href="/" class="site-avatar"><img src="http://luxiaotong-image.stor.sinaapp.com/%E6%88%91%E7%9A%84%E5%A4%B4%E5%83%8F.jpg" /></a>
+
+          <div class="site-info">
+            <h1 class="site-name"><a href="/">Shannon Lu</a></h1>
+            <p class="site-description">This is my blog about tech</p>
+          </div>
+
+          <nav>
+            <a href="/about">About</a>
+          </nav>
+        </header>
+      </div>
+    </div>
+
+    <div id="main" role="main" class="container">
+      <article class="post">
+  <h1>2015-07-01-解决安装xhprof后 fpm报错问题(recv failed 104 nginx 502)</h1>
+
+  <div class="entry">
+    <h2>问题描述</h2>
+
+<p><strong>安装xhprof后，在代码中加入</strong></p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">xhprof_enable(XHPROF_FLAGS_CPU+XHPROF_FLAGS_MEMORY); 
+$xhprof_data = xhprof_disable();
+var_dump($xhprof_data);exit;
+</code></pre></div>
+<p><strong>通过浏览器访问出现nginx 502报错</strong>
+<img src="http://luxiaotong-image.stor.sinaapp.com/nginx_502.png" alt=""></p>
+
+<p><strong>nginx error log报错如下</strong></p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">2015/06/29 21:30:26 [error] 27710#0: *140 recv() failed (104: Connection reset by peer) while reading response header from upstream, client: 10.44.112.83, server: , request: &quot;GET /test.php HTTP/1.1&quot;, upstream: &quot;fastcgi://127.0.0.1:8500&quot;, host: &quot;cq01-rdqa-dev091.cq01.baidu.com:8001&quot;
+</code></pre></div>
+<p><strong>fpm log日志信息如下</strong>
+<code>
+[29-Jun-2015 21:30:26] WARNING: [pool www2] child 27270 exited on signal 11 (SIGSEGV - core dumped) after 7526.184909 seconds from start
+</code></p>
+
+<h2>问题解决过程</h2>
+
+<p>首先从上述日志并没有看出具体的问题，经过在谷组上搜索，『recv failed 104 connection resetby peer』</p>
+
+<p>发现要在fpm日志输出更多错误信息。
+<a href="http://stackoverflow.com/questions/18379323/failed-104-connection-reset-by-peer">方法如下</a></p>
+
+<p>修改fpm配置文件fpm.conf，加入<strong>catch_workers_output = yes</strong></p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">[global]
+pid = run/fpm.pid
+error_log = log/fpm.log
+daemonize = yes 
+[www2]
+user=nobody
+group=nobody
+listen = ***
+pm = dynamic
+pm.max_children = 200 
+pm.start_servers = 2 
+pm.min_spare_servers = 1 
+pm.max_spare_servers = 3 
+request_terminate_timeout = 120s
+rlimit_files = 1310
+rlimit_core = unlimited
+catch_workers_output = yes
+</code></pre></div>
+<p>重启fpm，再次请求，fpm log会输出如下信息</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">30-Jun-2015 19:02:20] WARNING: [pool www2] child 17892 said into stderr: &quot;setaffinity: Invalid argument&quot;
+</code></pre></div>
+<p>再次在谷姐上搜索『setaffinity: Invalid argument』
+找到在<a href="https://bugs.php.net/bug.php?id=60078">php bug中有对该问题的描述</a>，并且在评论中找到<a href="https://github.com/odoucet/xhprof/commit/2e74533746bf14b0bcfc9a6fae08e1bf9b4f724b">修复此问题的代码</a></p>
+
+<p>于是<strong>将xhprof.c按照提交中的样子修改</strong>一下，之后将xhprof重新编译安装，就可以正常运行了。</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">array(2) {
+  [&quot;main()==&gt;xhprof_disable&quot;]=&gt;
+  array(5) {
+    [&quot;ct&quot;]=&gt;
+    int(1)
+    [&quot;wt&quot;]=&gt;
+    int(3)
+    [&quot;cpu&quot;]=&gt;
+    int(0)
+    [&quot;mu&quot;]=&gt;
+    int(840)
+    [&quot;pmu&quot;]=&gt;
+    int(0)
+  }
+  [&quot;main()&quot;]=&gt;
+  array(5) {
+    [&quot;ct&quot;]=&gt;
+    int(1)
+    [&quot;wt&quot;]=&gt;
+    int(16)
+    [&quot;cpu&quot;]=&gt;
+    int(0)
+    [&quot;mu&quot;]=&gt;
+    int(1856)
+    [&quot;pmu&quot;]=&gt;
+    int(0)
+  }
+}
+</code></pre></div>
+<h2>参考文献</h2>
+
+<p><a href="http://stackoverflow.com/questions/18379323/failed-104-connection-reset-by-peer">http://stackoverflow.com/questions/18379323/failed-104-connection-reset-by-peer</a></p>
+
+<p><a href="https://bugs.php.net/bug.php?id=60078">https://bugs.php.net/bug.php?id=60078</a></p>
+
+<p><a href="https://github.com/odoucet/xhprof/commit/2e74533746bf14b0bcfc9a6fae08e1bf9b4f724b">https://github.com/odoucet/xhprof/commit/2e74533746bf14b0bcfc9a6fae08e1bf9b4f724b</a></p>
+
+  </div>
+
+  <div class="date">
+    Written on July  1, 2015
+  </div>
+
+  
+<div class="comments">
+	<div id="disqus_thread"></div>
+	<script type="text/javascript">
+
+	    var disqus_shortname = 'luxiaotong';
+
+	    (function() {
+	        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+	        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+	        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+	    })();
+
+	</script>
+	<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+
+
+</article>
+
+      
+<div class="comments">
+	<div id="disqus_thread"></div>
+	<script type="text/javascript">
+
+	    var disqus_shortname = 'luxiaotong';
+
+	    (function() {
+	        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+	        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+	        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+	    })();
+
+	</script>
+	<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+
+
+    </div>
+
+
+    <div class="wrapper-footer">
+      <div class="container">
+        <footer class="footer">
+            
+<a href="mailto:luxiaotong@baidu.com"><i class="svg-icon email"></i></a>
+
+
+<a href="http://github.com/luxiaotong"><i class="svg-icon github"></i></a>
+
+
+
+
+
+
+
+            <p> &copy; 2015. All rights reserved.  </p>
+        </footer>
+      </div>
+    </div>
+
+    <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-62463243-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+  </body>
+</html>
