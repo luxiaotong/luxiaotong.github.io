@@ -1,0 +1,26 @@
+<ul>
+  <li>
+    <p>问题: 使用Xshell连接到开发机, Vim和shell中的中文都出现乱码</p>
+  </li>
+  <li>解决: 
+    <ol>
+      <li>Xshell编码改成UTF-8</li>
+      <li>vim ~/.bash_profile, 增加一行:
+ <code>export LC_ALL=en_US.utf8</code></li>
+      <li>source ~/.bash_profile</li>
+    </ol>
+  </li>
+  <li>备注:
+    <ol>
+      <li>由于没有sudo和root权限, 所以只能修改当前登录用户的~/.bash_profile, 如果有权限可以尝试修改/etc/sysconfig/i18n</li>
+      <li>source的作用是把刚才修改的内容加载一下.否则修改完需要重启或重新登录.</li>
+      <li>修改前可以使用locale -a, 查看当前支持的编码.</li>
+    </ol>
+  </li>
+  <li>参考:
+    <ul>
+      <li><a href="http://blog.csdn.net/wangjun_pfc/article/details/4009205" title="http://blog.csdn.net/wangjun_pfc/article/details/4009205">http://blog.csdn.net/wangjun_pfc/article/details/4009205</a></li>
+      <li><a href="http://www.cnblogs.com/Jack47/p/3551584.html" title="http://www.cnblogs.com/Jack47/p/3551584.html">http://www.cnblogs.com/Jack47/p/3551584.html</a></li>
+    </ul>
+  </li>
+</ul>

@@ -49,6 +49,31 @@
   
     <article class="post">
 
+      <h1><a href="/Redis%E4%B8%8EMemcached%E7%9A%84%E5%8C%BA%E5%88%AB/">Redis与Memcached的区别</a></h1>
+
+      <div class="entry">
+        <h2>持久化</h2>
+
+<hr>
+
+<h3>RDB(快照)</h3>
+
+<h4>优点</h4>
+
+<ul>
+<li>RDB会把某一时间点的在redis的数据压缩到单个文件中，在实际中，可以获取过去24小时中每个小时的RDB文件，也可以每天保存。灾难恢复时很容易的使用不同版本恢复</li>
+<li>RDB非常适合容灾，单个压缩文件可以传到远程数据中心</li>
+<li>RDB最大化了Redis性能，Redis主线程fork子进程然后其它事情由子进程处理，主进程不处理磁盘IO操作</li>
+<li>RDB在重启大数据集时，速度更快</li>
+</ul>
+
+      </div>
+
+      <a href="/Redis%E4%B8%8EMemcached%E7%9A%84%E5%8C%BA%E5%88%AB/" class="read-more">Read More</a>
+    </article>
+  
+    <article class="post">
+
       <h1><a href="/%E8%A7%A3%E5%86%B3%E5%AE%89%E8%A3%85xhprof%E5%90%8E%20fpm%E6%8A%A5%E9%94%99%E9%97%AE%E9%A2%98(recv%20failed%20104%20nginx%20502)/">解决安装xhprof后 fpm报错问题(recv failed 104 nginx 502)</a></h1>
 
       <div class="entry">
